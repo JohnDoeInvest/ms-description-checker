@@ -1,0 +1,14 @@
+{
+    "name": "service-b",
+    "description": "Service B",
+    "envVars": {
+    },
+    "incoming": {},
+    "outgoing": {},
+    "services": {
+      "shared": {
+        "redis": {}
+      },
+      "local": {}
+    }
+  }

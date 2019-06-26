@@ -1,0 +1,17 @@
+{
+    "name": "service-a",
+    "description": "Service A",
+    "envVars": {
+      "ENV": {
+        "description": "Defines the running conditions: development or production"
+      }
+    },
+    "incoming": {},
+    "outgoing": {},
+    "services": {
+      "shared": {
+        "redis": {}
+      },
+      "local": {}
+    }
+  }

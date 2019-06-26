@@ -5,9 +5,11 @@ module.exports = function (opts) {
   )
 
   if (errors.length > 0) {
-    console.error(errors.join('\n'))
-    process.exit(1)
+    return errors
+    // console.error(errors.join('\n'))
+    // process.exit(1)
   } else {
-    process.exit(0)
+    return undefined
+    // process.exit(0)
   }
 }
