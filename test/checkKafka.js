@@ -7,7 +7,7 @@ describe('Check Kafka', () => {
     const errors = checker({ srcPath: path.join(__dirname, 'projects', 'src-producer-not-used') })
     assert.isDefined(errors)
     assert.lengthOf(errors, 1)
-    assert.match(errors[0], /unused.*test-topic/)
+    assert.match(errors[0].message, /unused.*test-topic/)
   })
 
   it('Producer defined and used', () => {
@@ -19,14 +19,14 @@ describe('Check Kafka', () => {
     const errors = checker({ srcPath: path.join(__dirname, 'projects', 'src-producer-not-defined') })
     assert.isDefined(errors)
     assert.lengthOf(errors, 1)
-    assert.match(errors[0], /Trying to produce to 'test-topic'/)
+    assert.match(errors[0].message, /Trying to produce to 'test-topic'/)
   })
 
   it('Consumer defined, not used', () => {
     const errors = checker({ srcPath: path.join(__dirname, 'projects', 'src-consumer-not-used') })
     assert.isDefined(errors)
     assert.lengthOf(errors, 1)
-    assert.match(errors[0], /unused.*test-topic/)
+    assert.match(errors[0].message, /unused.*test-topic/)
   })
 
   it('Consumer defined and used', () => {
@@ -38,15 +38,15 @@ describe('Check Kafka', () => {
     const errors = checker({ srcPath: path.join(__dirname, 'projects', 'src-consumer-not-defined') })
     assert.isDefined(errors)
     assert.lengthOf(errors, 1)
-    assert.match(errors[0], /Trying to subscribe to 'test-topic'/)
+    assert.match(errors[0].message, /Trying to subscribe to 'test-topic'/)
   })
 
   it('Produce/Subscribe not using literal string', () => {
     const errors = checker({ srcPath: path.join(__dirname, 'projects', 'src-kafka-literal') })
     assert.isDefined(errors)
     assert.lengthOf(errors, 3)
-    assert.match(errors[0], /subscribe contains non-literal/)
-    assert.match(errors[1], /subscribe is non-literal/)
-    assert.match(errors[2], /called with non-literal/)
+    assert.match(errors[0].message, /subscribe contains non-literal/)
+    assert.match(errors[1].message, /subscribe is non-literal/)
+    assert.match(errors[2].message, /called with non-literal/)
   })
 })

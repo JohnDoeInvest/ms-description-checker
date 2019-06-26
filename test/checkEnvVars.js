@@ -8,7 +8,7 @@ describe('Check Environment Variables', () => {
     const errors = checker({ srcPath: path.join(__dirname, 'projects', 'src-env') })
     assert.isDefined(errors, 'Missing errors about PORT')
     assert.lengthOf(errors, 1, 'More than one error!')
-    assert.match(errors[0], /PORT/, 'Incorrect variable missing')
+    assert.match(errors[0].message, /PORT/, 'Incorrect variable missing')
   })
 
   it('Global ENV used in service', () => {
@@ -23,8 +23,8 @@ describe('Check Environment Variables', () => {
     // and one for the variable being used but not defined. These happens in different services.
     assert.lengthOf(errors, 2)
     // Just to check that we have the correct places, this is a bit weak since we can't be 100% sure that this is the order.
-    assert.match(errors[0], /serviceA.*unused.*ENV/)
-    assert.match(errors[1], /serviceB.*ENV.*not defined/)
+    assert.match(errors[0].message, /unused.*ENV/)
+    assert.match(errors[1].message, /ENV.*not defined/)
   })
 
   it('Service ENV used in same service', () => {
@@ -37,7 +37,7 @@ describe('Check Environment Variables', () => {
     assert.isDefined(errors)
     assert.lengthOf(errors, 1)
     // Just to check that we have the correct places, this is a bit weak since we can't be 100% sure that this is the order.
-    assert.match(errors[0], /serviceA.*unused.*ENV/)
+    assert.match(errors[0].message, /unused.*ENV/)
   })
 
   it('ENV used and not defined in service', () => {
@@ -45,6 +45,6 @@ describe('Check Environment Variables', () => {
     assert.isDefined(errors)
     assert.lengthOf(errors, 1)
     // Just to check that we have the correct places, this is a bit weak since we can't be 100% sure that this is the order.
-    assert.match(errors[0], /serviceA.*ENV.*not defined/)
+    assert.match(errors[0].message, /ENV.*not defined/)
   })
 })
