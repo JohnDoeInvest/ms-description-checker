@@ -6,10 +6,7 @@ module.exports = function (opts) {
 
   if (errors.length > 0) {
     return errors
-    // console.error(errors.join('\n'))
-    // process.exit(1)
   } else {
     return undefined
-    // process.exit(0)
   }
 }
