@@ -4,6 +4,9 @@ node_js:
   - '10'
   - '9'
   - '8'
+
+cache: npm
+
 matrix:
   include:
     - node_js: node
