@@ -1,0 +1,21 @@
+{
+    "name": "GLOBAL",
+    "description": "Reserved name GLOBAL allows us to document for instance the environment variables and services used by the main application.",
+    "envVars": {
+      "ENV": {
+        "description": "Defines the running conditions: development or production"
+      },
+      "PORT": {
+        "description": "The TCP port on which the server listens, defaults to 3002"
+      }
+    },
+    "incoming": {},
+    "outgoing": {},
+    "services": {
+      "shared": {
+        "redis": {}
+      },
+      "local": {}
+    }
+  }
+  
