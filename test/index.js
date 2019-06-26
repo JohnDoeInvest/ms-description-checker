@@ -1,6 +1,6 @@
 const checker = require('../src/index')
 const path = require('path')
-const options = { srcPath: path.join(__dirname , 'test-src') }
+const options = { srcPath: path.join(__dirname, 'test-src') }
 
 checker(options)
 

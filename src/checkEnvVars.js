@@ -6,7 +6,6 @@ const path = require('path')
 const glob = require('glob')
 const { logError } = require('./logger')
 
-
 module.exports = function (opts) {
   const errors = []
 
@@ -35,7 +34,7 @@ module.exports = function (opts) {
       const jsFileData = fs.readFileSync(jsFile, 'utf-8')
 
       walk.simple(acorn.parse(jsFileData, { locations: true, sourceFile: jsFile }), {
-        MemberExpression(node) {
+        MemberExpression (node) {
           if (node.object.type === 'MemberExpression') {
             if (node.object.object.name === 'process' && node.object.property.name === 'env') {
               const envName = node.property.name
@@ -44,7 +43,7 @@ module.exports = function (opts) {
               } else if (globalEnvs[envName] !== undefined) {
                 globalEnvs[envName] = true
               } else {
-                logError(node, `Environment variable '${envName}' not defined in serviceDescription`)
+                logError(errors, node, `Environment variable '${envName}' not defined in serviceDescription`)
               }
             }
           }
@@ -63,14 +62,14 @@ module.exports = function (opts) {
     const jsFileData = fs.readFileSync(jsFile, 'utf-8')
 
     walk.simple(acorn.parse(jsFileData, { locations: true, sourceFile: jsFile }), {
-      MemberExpression(node) {
+      MemberExpression (node) {
         if (node.object.type === 'MemberExpression') {
           if (node.object.object.name === 'process' && node.object.property.name === 'env') {
             const envName = node.property.name
             if (globalEnvs[envName] !== undefined) {
               globalEnvs[envName] = true
             } else {
-              logError(node, `Environment variable '${envName}' not defined in serviceDescription`)
+              logError(errors, node, `Environment variable '${envName}' not defined in serviceDescription`)
             }
           }
         }

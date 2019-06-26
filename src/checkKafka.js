@@ -6,7 +6,6 @@ const path = require('path')
 const glob = require('glob')
 const { logError } = require('./logger')
 
-
 module.exports = function (opts) {
   const errors = []
   const descriptionPaths = glob.sync(path.join(opts.srcPath, '/**/serviceDescription.json'))
@@ -46,7 +45,7 @@ module.exports = function (opts) {
             if (node.callee.property.name === 'produce') {
               const firstArg = node.arguments[0]
               if (firstArg && firstArg.type !== 'Literal') {
-                logError(firstArg, 'Produce was called with non literal.')
+                logError(errors, firstArg, 'Produce was called with non literal.')
                 return
               }
 
@@ -55,7 +54,7 @@ module.exports = function (opts) {
               if (foundProducers[topicValue] !== undefined) {
                 foundProducers[topicValue] = true
               } else {
-                logError(firstArg, `Trying to produce to '${topicValue}' which is not in serviceDescription`)
+                logError(errors, firstArg, `Trying to produce to '${topicValue}' which is not in serviceDescription`)
               }
             } else if (node.callee.property.name === 'subscribe') {
               const firstArg = node.arguments[0]
@@ -63,7 +62,7 @@ module.exports = function (opts) {
 
               for (const element of firstArg.elements) {
                 if (element && element.type !== 'Literal') {
-                  logError(element, 'Arry passed to subscribe contains non-literal.')
+                  logError(errors, element, 'Arry passed to subscribe contains non-literal.')
                   continue
                 }
 
@@ -71,7 +70,7 @@ module.exports = function (opts) {
                 if (foundConsumers[topicValue] !== undefined) {
                   foundConsumers[topicValue] = true
                 } else {
-                  logError(element, `Trying to subscribe to '${topicValue}' which is not in serviceDescription`)
+                  logError(errors, element, `Trying to subscribe to '${topicValue}' which is not in serviceDescription`)
                 }
               }
             }
