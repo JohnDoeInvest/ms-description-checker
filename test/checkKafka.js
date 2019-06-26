@@ -41,8 +41,12 @@ describe('Check Kafka', () => {
     assert.match(errors[0], /Trying to subscribe to 'test-topic'/)
   })
 
-  /*
-  - NOT using Literals in `subscribe`
-  - NOT using Literals in `produce`
-   */
+  it('Produce/Subscribe not using literal string', () => {
+    const errors = checker({ srcPath: path.join(__dirname, 'projects', 'src-kafka-literal') })
+    assert.isDefined(errors)
+    assert.lengthOf(errors, 3)
+    assert.match(errors[0], /subscribe contains non-literal/)
+    assert.match(errors[1], /subscribe is non-literal/)
+    assert.match(errors[2], /called with non-literal/)
+  })
 })

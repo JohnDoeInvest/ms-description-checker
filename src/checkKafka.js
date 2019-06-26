@@ -45,7 +45,7 @@ module.exports = function (opts) {
             if (node.callee.property.name === 'produce') {
               const firstArg = node.arguments[0]
               if (firstArg && firstArg.type !== 'Literal') {
-                logError(errors, firstArg, 'Produce was called with non literal.')
+                logError(errors, firstArg, 'Produce was called with non-literal.')
                 return
               }
 
@@ -59,6 +59,11 @@ module.exports = function (opts) {
             } else if (node.callee.property.name === 'subscribe') {
               const firstArg = node.arguments[0]
               const foundConsumers = serviceReqirement.consumers || {}
+
+              if (firstArg.type === 'Identifier') {
+                logError(errors, firstArg, 'Value passed to subscribe is non-literal')
+                return
+              }
 
               for (const element of firstArg.elements) {
                 if (element && element.type !== 'Literal') {
