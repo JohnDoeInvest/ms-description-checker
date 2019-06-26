@@ -1,0 +1,1 @@
+({}).produce('test-topic')

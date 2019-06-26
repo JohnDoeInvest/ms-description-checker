@@ -1,0 +1,19 @@
+{
+    "name": "service-a",
+    "description": "Service A",
+    "envVars": {
+    },
+    "incoming": {},
+    "outgoing": {},
+    "services": {
+      "shared": {
+        "redis": {},
+        "kafka": {
+          "produces": [
+            "test-topic"
+          ]
+        }
+      },
+      "local": {}
+    }
+  }

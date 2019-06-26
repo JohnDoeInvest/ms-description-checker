@@ -1,0 +1,14 @@
+{
+    "name": "GLOBAL",
+    "description": "Reserved name GLOBAL allows us to document for instance the environment variables and services used by the main application.",
+    "envVars": {
+    },
+    "incoming": {},
+    "outgoing": {},
+    "services": {
+      "shared": {
+        "redis": {}
+      },
+      "local": {}
+    }
+  }

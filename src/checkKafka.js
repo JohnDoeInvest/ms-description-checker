@@ -49,7 +49,7 @@ module.exports = function (opts) {
                 return
               }
 
-              const foundProducers = serviceReqirement.producers
+              const foundProducers = serviceReqirement.producers || {}
               const topicValue = firstArg.value
               if (foundProducers[topicValue] !== undefined) {
                 foundProducers[topicValue] = true
@@ -58,7 +58,7 @@ module.exports = function (opts) {
               }
             } else if (node.callee.property.name === 'subscribe') {
               const firstArg = node.arguments[0]
-              const foundConsumers = serviceReqirement.consumers
+              const foundConsumers = serviceReqirement.consumers || {}
 
               for (const element of firstArg.elements) {
                 if (element && element.type !== 'Literal') {
