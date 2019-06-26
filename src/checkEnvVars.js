@@ -4,7 +4,7 @@ const fs = require('fs')
 const _ = require('lodash')
 const path = require('path')
 const glob = require('glob')
-const { logError } = require('./logger')
+const { logError, logErrorAtNode } = require('./logger')
 
 module.exports = function (opts) {
   const errors = []
@@ -43,7 +43,7 @@ module.exports = function (opts) {
               } else if (globalEnvs[envName] !== undefined) {
                 globalEnvs[envName] = true
               } else {
-                logError(errors, node, `Environment variable '${envName}' not defined in serviceDescription`)
+                logErrorAtNode(errors, node, `Environment variable '${envName}' not defined in serviceDescription`)
               }
             }
           }
@@ -53,7 +53,7 @@ module.exports = function (opts) {
 
     const notUsedEnvVars = _.keys(_.pickBy(serviceReqirement, (o) => !o))
     for (let envVar of notUsedEnvVars) {
-      errors.push(`${path.normalize(descriptionPath)}: Service description contains unused environment variable '${envVar}'`)
+      logError(errors, path.normalize(descriptionPath), `Service description contains unused environment variable '${envVar}'`)
     }
   }
 
@@ -69,7 +69,7 @@ module.exports = function (opts) {
             if (globalEnvs[envName] !== undefined) {
               globalEnvs[envName] = true
             } else {
-              logError(errors, node, `Environment variable '${envName}' not defined in serviceDescription`)
+              logErrorAtNode(errors, node, `Environment variable '${envName}' not defined in serviceDescription`)
             }
           }
         }
@@ -79,7 +79,7 @@ module.exports = function (opts) {
 
   const notUsedGlobalEnvVars = _.keys(_.pickBy(globalEnvs, (o) => !o))
   for (let envVar of notUsedGlobalEnvVars) {
-    errors.push(`${path.normalize(path.join(opts.srcPath, '/serviceDescription.json'))}: Service description contains unused environment variable '${envVar}'`)
+    logError(errors, path.normalize(path.join(opts.srcPath, '/serviceDescription.json')), `Service description contains unused environment variable '${envVar}'`)
   }
 
   return errors

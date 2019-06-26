@@ -4,7 +4,7 @@ const fs = require('fs')
 const _ = require('lodash')
 const path = require('path')
 const glob = require('glob')
-const { logError } = require('./logger')
+const { logError, logErrorAtNode } = require('./logger')
 
 module.exports = function (opts) {
   const errors = []
@@ -45,7 +45,7 @@ module.exports = function (opts) {
             if (node.callee.property.name === 'produce') {
               const firstArg = node.arguments[0]
               if (firstArg && firstArg.type !== 'Literal') {
-                logError(errors, firstArg, 'Produce was called with non-literal.')
+                logErrorAtNode(errors, firstArg, 'Produce was called with non-literal.')
                 return
               }
 
@@ -54,20 +54,20 @@ module.exports = function (opts) {
               if (foundProducers[topicValue] !== undefined) {
                 foundProducers[topicValue] = true
               } else {
-                logError(errors, firstArg, `Trying to produce to '${topicValue}' which is not in serviceDescription`)
+                logErrorAtNode(errors, firstArg, `Trying to produce to '${topicValue}' which is not in serviceDescription`)
               }
             } else if (node.callee.property.name === 'subscribe') {
               const firstArg = node.arguments[0]
               const foundConsumers = serviceReqirement.consumers || {}
 
               if (firstArg.type === 'Identifier') {
-                logError(errors, firstArg, 'Value passed to subscribe is non-literal')
+                logErrorAtNode(errors, firstArg, 'Value passed to subscribe is non-literal')
                 return
               }
 
               for (const element of firstArg.elements) {
                 if (element && element.type !== 'Literal') {
-                  logError(errors, element, 'Arry passed to subscribe contains non-literal.')
+                  logErrorAtNode(errors, element, 'Array passed to subscribe contains non-literal.')
                   continue
                 }
 
@@ -75,7 +75,7 @@ module.exports = function (opts) {
                 if (foundConsumers[topicValue] !== undefined) {
                   foundConsumers[topicValue] = true
                 } else {
-                  logError(errors, element, `Trying to subscribe to '${topicValue}' which is not in serviceDescription`)
+                  logErrorAtNode(errors, element, `Trying to subscribe to '${topicValue}' which is not in serviceDescription`)
                 }
               }
             }
@@ -86,12 +86,12 @@ module.exports = function (opts) {
 
     const notUsedConsumers = _.keys(_.pickBy(serviceReqirement.consumers, (o) => !o))
     for (let consumer of notUsedConsumers) {
-      errors.push(`${path.normalize(descriptionPath)}: Service description contains unused consumer '${consumer}'`)
+      logError(errors, path.normalize(descriptionPath), `Service description contains unused consumer '${consumer}'`)
     }
 
     const notUsedProducers = _.keys(_.pickBy(serviceReqirement.producers, (o) => !o))
     for (let producer of notUsedProducers) {
-      errors.push(`${path.normalize(descriptionPath)}: Service description contains unused producer '${producer}'`)
+      logError(errors, path.normalize(descriptionPath), `Service description contains unused producer '${producer}'`)
     }
   }
 

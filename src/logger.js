@@ -1,9 +1,17 @@
 const path = require('path')
 
-function logError (errors, node, message) {
-  errors.push(`\x1b[31m${path.normalize(node.loc.source)}:${node.loc.start.line}:${node.loc.start.column}: \x1b[0m${message}`)
+function logErrorAtNode (errors, node, message) {
+  logError(errors, `${path.normalize(node.loc.source)}:${node.loc.start.line}:${node.loc.start.column}`, message)
+}
+
+function logError (errors, position, message) {
+  errors.push({
+    position,
+    message
+  })
 }
 
 module.exports = {
-  logError
+  logError,
+  logErrorAtNode
 }

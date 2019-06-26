@@ -6,11 +6,16 @@
   "scripts": {
     "test": "eslint . && mocha --exit"
   },
+  "bin": {
+    "ms-description-checker": "./src/cli.js"
+  },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "acorn": "^6.1.1",
     "acorn-walk": "^6.1.1",
+    "chalk": "^2.4.2",
+    "commander": "^2.20.0",
     "glob": "^7.1.4",
     "lodash": "^4.17.11"
   },
