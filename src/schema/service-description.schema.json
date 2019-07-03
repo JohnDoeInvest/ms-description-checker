@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://johndoeinvest.com/service-description.schema.json",
+  "additionalProperties": false,
+  "title": "Service Description",
+  "description": "A description and structure of a service",
+  "type": "object",
+  "required": [
+    "name",
+    "description",
+    "services"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the service"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of what the service does"
+    },
+    "envVars": {
+      "description": "What environment variables are used by this service?",
+      "$ref": "http://johndoeinvest.com/env-vars.schema.json"
+    },
+    "incoming": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What incoming sources are there?",
+      "properties": {
+        "restAPI": {
+          "description": "Defines that there is a REST API and what it allows",
+          "$ref": "http://johndoeinvest.com/rest-api.schema.json"
+        }
+      }
+    },
+    "outgoing": {
+      "type": "object",
+      "description": "What outgoing sources are there?",
+      "patternProperties": {
+        "^.*$": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "services": {
+      "type": "object",
+      "description": "The services used by this micro service",
+      "additionalProperties": false,
+      "required": ["shared", "local"],
+      "properties": {
+        "shared": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "redis": {
+              "type": "object"
+            },
+            "kafka": {
+              "$ref": "http://johndoeinvest.com/kafka.schema.json"
+            }
+          }
+        },
+        "local": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sqlite": {
+              "$ref": "http://johndoeinvest.com/sqlite.schema.json"
+            }
+          }
+        }
+      }
+    }
+  }
+}

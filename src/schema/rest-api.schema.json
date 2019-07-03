@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://johndoeinvest.com/rest-api.schema.json",
+  "additionalProperties": false,
+  "title": "REST API",
+  "description": "Defines a REST API",
+  "type": "object",
+  "properties": {
+    "pathPrefix": {
+      "type": "string",
+      "description": "Base path of the REST API"
+    },
+    "endpoints": {
+      "type": "object",
+      "description": "Endpoints exposed by the REST API",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^/.*$": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Endpoint definition",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"]
+              },
+              "type": {
+                "type": "string",
+                "enum": ["CLIENT", "ADMIN", "EXTERNAL"]
+              },
+              "handlingFunction": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "parameters": {
+                "type": "object",
+                "patternProperties": {
+                  "^.*$": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

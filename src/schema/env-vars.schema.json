@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://johndoeinvest.com/env-vars.schema.json",
+  "additionalProperties": false,
+  "title": "Environment variables",
+  "description": "List of variables and their properties.",
+  "type": "object",
+  "patternProperties": {
+    "^[A-Z_]*$": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "What is this variable for?"
+        }
+      }
+    }
+  }
+}

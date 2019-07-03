@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://johndoeinvest.com/kafka.schema.json",
+  "additionalProperties": false,
+  "title": "Kafka service",
+  "description": "What parts of Kafka is used",
+  "type": "object",
+  "properties": {
+    "consumes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "produces": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
