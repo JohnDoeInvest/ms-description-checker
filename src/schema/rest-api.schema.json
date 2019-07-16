@@ -21,6 +21,7 @@
             "type": "object",
             "additionalProperties": false,
             "description": "Endpoint definition",
+            "required": ["handlingFunction", "type", "description", "method"],
             "properties": {
               "method": {
                 "type": "string",
@@ -40,7 +41,19 @@
                 "type": "object",
                 "patternProperties": {
                   "^.*$": {
-                    "type": "string"
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["description"],
+                    "properties": {
+                      "description": {
+                        "type": "string"
+                      },
+                      "optional": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "If true the parameter is not required for all request."
+                      }
+                    }
                   }
                 }
               }
