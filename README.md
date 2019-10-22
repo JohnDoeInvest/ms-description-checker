@@ -1,4 +1,4 @@
-# ms-description-checker [![Build Status](https://travis-ci.com/JohnDoeInvest/ms-description-checker.svg?branch=master)](https://travis-ci.com/JohnDoeInvest/ms-description-checker)
+# ms-description-checker [![Sponsor](https://johndoeinvest.com/logo-jdi-tag.png)](https://johndoeinvest.com/) [![Build Status](https://travis-ci.com/JohnDoeInvest/ms-description-checker.svg?branch=master)](https://travis-ci.com/JohnDoeInvest/ms-description-checker)
 
 This tool checks that the code implements what is written in the service descriptions.
 
