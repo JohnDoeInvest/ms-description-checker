@@ -14,6 +14,8 @@ module.exports = function (opts) {
   const descriptionPaths = glob.sync(path.join(opts.srcPath, '/**/serviceDescription.json'))
   const ignoreFiles = []
 
+  const usedServiceEnvs = []
+
   for (let descriptionPath of descriptionPaths) {
     const serviceDirectory = path.parse(descriptionPath).dir
     const jsFiles = glob.sync(path.join(serviceDirectory, '**', '*.js'))
@@ -31,25 +33,10 @@ module.exports = function (opts) {
     }
 
     for (let jsFile of jsFiles) {
-      const jsFileData = fs.readFileSync(jsFile, 'utf-8')
-
-      walk.simple(acorn.parse(jsFileData, { locations: true, sourceFile: jsFile }), {
-        MemberExpression (node) {
-          if (node.object.type === 'MemberExpression') {
-            if (node.object.object.name === 'process' && node.object.property.name === 'env') {
-              const envName = node.property.name
-              if (serviceReqirement[envName] !== undefined) {
-                serviceReqirement[envName] = true
-              } else if (globalEnvs[envName] !== undefined) {
-                globalEnvs[envName] = true
-              } else {
-                logErrorAtNode(errors, node, `Environment variable '${envName}' not defined in serviceDescription`)
-              }
-            }
-          }
-        }
-      })
+      walkFile(jsFile, serviceReqirement, globalEnvs, errors)
     }
+
+    usedServiceEnvs.push(..._.keys(_.pickBy(serviceReqirement, (o) => o)))
 
     const notUsedEnvVars = _.keys(_.pickBy(serviceReqirement, (o) => !o))
     for (let envVar of notUsedEnvVars) {
@@ -67,8 +54,12 @@ module.exports = function (opts) {
           if (node.object.object.name === 'process' && node.object.property.name === 'env') {
             const envName = node.property.name
             if (globalEnvs[envName] !== undefined) {
-              globalEnvs[envName] = true
-            } else {
+              if (usedServiceEnvs.includes(envName)) {
+                logErrorAtNode(errors, node, `Environment variable '${envName}' has been defined in a non-global serviceDescription. And should not longer be global.`)
+              } else {
+                globalEnvs[envName] = true
+              }
+            } else if (!usedServiceEnvs.includes(envName)) {
               logErrorAtNode(errors, node, `Environment variable '${envName}' not defined in serviceDescription`)
             }
           }
@@ -83,4 +74,35 @@ module.exports = function (opts) {
   }
 
   return errors
+}
+
+function walkFile (jsFile, serviceReqirement, globalEnvs, errors) {
+  const jsFileData = fs.readFileSync(jsFile, 'utf-8')
+  const jsFileDirectory = path.dirname(jsFile)
+
+  walk.simple(acorn.parse(jsFileData, { locations: true, sourceFile: jsFile }), {
+    MemberExpression (node) {
+      if (node.object.type === 'MemberExpression') {
+        if (node.object.object.name === 'process' && node.object.property.name === 'env') {
+          const envName = node.property.name
+          if (serviceReqirement[envName] !== undefined) {
+            serviceReqirement[envName] = true
+          } else if (globalEnvs[envName] !== undefined) {
+            globalEnvs[envName] = true
+          } else {
+            logErrorAtNode(errors, node, `Environment variable '${envName}' not defined in serviceDescription`)
+          }
+        }
+      }
+    },
+    CallExpression (node) {
+      if (node.callee.type === 'Identifier' && node.callee.name === 'require') {
+        const requiredFile = node.arguments[0].value
+        const requiredPath = path.resolve(jsFileDirectory, requiredFile) + '.js'
+        if (fs.existsSync(requiredPath)) {
+          walkFile(requiredPath, serviceReqirement, globalEnvs, errors)
+        }
+      }
+    }
+  })
 }

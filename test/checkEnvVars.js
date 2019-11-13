@@ -32,6 +32,12 @@ describe('Check Environment Variables', () => {
     assert.isUndefined(errors, 'Didn´t find usage in service')
   })
 
+  it('Service ENV used from utils', () => {
+    const errors = checker({ srcPath: path.join(__dirname, 'projects', 'src-service-env-in-utils') })
+    console.log(JSON.stringify(errors))
+    assert.isUndefined(errors, 'Didn´t find usage in service')
+  })
+
   it('Service ENV not used in service', () => {
     const errors = checker({ srcPath: path.join(__dirname, 'projects', 'src-service-env-fail') })
     assert.isDefined(errors)

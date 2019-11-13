@@ -3,7 +3,7 @@
   "$id": "http://johndoeinvest.com/env-vars.schema.json",
   "additionalProperties": false,
   "title": "Environment variables",
-  "description": "List of variables and their properties.",
+  "description": "List of required variables and their properties. Remember that the variable could be required by shared code outside of your service.",
   "type": "object",
   "patternProperties": {
     "^[A-Z_]*$": {

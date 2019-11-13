@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 module.exports = function (opts) {
   const errors = [].concat(
     require('./checkSchema')(opts),
@@ -9,7 +11,7 @@ module.exports = function (opts) {
   // them with each of the checks? It would probably be quite simple.
 
   if (errors.length > 0) {
-    return errors
+    return _.uniqBy(errors, (e) => e.message + e.position)
   } else {
     return undefined
   }
