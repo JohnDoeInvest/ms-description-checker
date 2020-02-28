@@ -4,7 +4,8 @@ module.exports = function (opts) {
   const errors = [].concat(
     require('./checkSchema')(opts),
     require('./checkKafka')(opts),
-    require('./checkEnvVars')(opts)
+    require('./checkEnvVars')(opts),
+    require('./checkRequestData')(opts)
   )
 
   // TODO: Rewrite so that this file finds all services and then goes trough
