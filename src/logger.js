@@ -1,17 +1,27 @@
 const path = require('path')
 
-function logErrorAtNode (errors, node, message) {
-  logError(errors, `${path.normalize(node.loc.source)}:${node.loc.start.line}:${node.loc.start.column}`, message)
+function logErrorAtNode (output, node, message) {
+  logError(output, `${path.normalize(node.loc.filename)}:${node.loc.start.line}:${node.loc.start.column}`, message)
 }
 
-function logError (errors, position, message) {
-  errors.push({
+function logError (output, position, message) {
+  output.push({
     position,
-    message
+    message,
+    type: 'error'
+  })
+}
+
+function logWarning (output, position, message) {
+  output.push({
+    position,
+    message,
+    type: 'warning'
   })
 }
 
 module.exports = {
   logError,
-  logErrorAtNode
+  logErrorAtNode,
+  logWarning
 }

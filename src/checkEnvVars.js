@@ -1,5 +1,5 @@
-const acorn = require('acorn')
-const walk = require('acorn-walk')
+const parser = require('@babel/parser')
+const traverse = require('@babel/traverse').default
 const fs = require('fs')
 const _ = require('lodash')
 const path = require('path')
@@ -47,9 +47,11 @@ module.exports = function (opts) {
   const otherJSFiles = glob.sync(path.join(opts.srcPath, '/**/*.js'), { ignore: ignoreFiles })
   for (let jsFile of otherJSFiles) {
     const jsFileData = fs.readFileSync(jsFile, 'utf-8')
+    const ast = parser.parse(jsFileData, { sourceType: 'module', sourceFilename: jsFile, plugins: ['objectRestSpread'] })
 
-    walk.simple(acorn.parse(jsFileData, { locations: true, sourceFile: jsFile }), {
-      MemberExpression (node) {
+    traverse(ast, {
+      MemberExpression (nodePath) {
+        const node = nodePath.node
         if (node.object.type === 'MemberExpression') {
           if (node.object.object.name === 'process' && node.object.property.name === 'env') {
             const envName = node.property.name
@@ -79,9 +81,11 @@ module.exports = function (opts) {
 function walkFile (jsFile, serviceReqirement, globalEnvs, errors) {
   const jsFileData = fs.readFileSync(jsFile, 'utf-8')
   const jsFileDirectory = path.dirname(jsFile)
+  const ast = parser.parse(jsFileData, { sourceType: 'module', sourceFilename: jsFile, plugins: ['objectRestSpread'] })
 
-  walk.simple(acorn.parse(jsFileData, { locations: true, sourceFile: jsFile }), {
-    MemberExpression (node) {
+  traverse(ast, {
+    MemberExpression (nodePath) {
+      const node = nodePath.node
       if (node.object.type === 'MemberExpression') {
         if (node.object.object.name === 'process' && node.object.property.name === 'env') {
           const envName = node.property.name
@@ -95,7 +99,8 @@ function walkFile (jsFile, serviceReqirement, globalEnvs, errors) {
         }
       }
     },
-    CallExpression (node) {
+    CallExpression (nodePath) {
+      const node = nodePath.node
       if (node.callee.type === 'Identifier' && node.callee.name === 'require') {
         const requiredFile = node.arguments[0].value
         const requiredPath = path.resolve(jsFileDirectory, requiredFile) + '.js'

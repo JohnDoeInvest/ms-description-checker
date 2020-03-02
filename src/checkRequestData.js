@@ -1,10 +1,10 @@
-const acorn = require('acorn')
-const walk = require('acorn-walk')
+const parser = require('@babel/parser')
+const traverse = require('@babel/traverse').default
 const fs = require('fs')
 const path = require('path')
 const glob = require('glob')
 
-const { logErrorAtNode } = require('./logger')
+const { logWarning, logErrorAtNode } = require('./logger')
 
 module.exports = function (opts) {
   const errors = []
@@ -35,19 +35,37 @@ module.exports = function (opts) {
 
     for (let jsFile of jsFiles) {
       const jsFileData = fs.readFileSync(jsFile, 'utf-8')
+      const ast = parser.parse(jsFileData, { sourceType: 'module', sourceFilename: jsFile, plugins: ['objectRestSpread'] })
 
-      walk.simple(acorn.parse(jsFileData, { locations: true, sourceFile: jsFile }), {
-        FunctionDeclaration (outerNode) {
+      traverse(ast, {
+        FunctionDeclaration (outerPath) {
+          const outerNode = outerPath.node
           if (serviceReqirement[outerNode.id.name] !== undefined) {
             const reqPropertyName = serviceReqirement[outerNode.id.name].method === 'GET' ? 'query' : 'body'
-            walk.ancestor(outerNode, {
-              MemberExpression (node, _, ancestors) {
-                if (node.property.name === reqPropertyName) {
-                  const parent = ancestors[ancestors.length - 2]
+            traverse(outerNode, {
+              MemberExpression (nodePath) {
+                const node = nodePath.node
+                if (node.property.name === reqPropertyName && node.object.name === 'req') {
+                  const parent = nodePath.parent
+
                   if (parent.property === undefined) {
-                    // This is probably a re-assignment. We could try to trace it later.
-                    // This might require us to use something other than Acorn since we need a way to find the usage of a variable in a scope
-                    // console.log(parent)
+                    if (parent.type === 'VariableDeclarator') {
+                      const binding = nodePath.scope.getBinding(parent.id.name)
+                      for (const path of binding.referencePaths) {
+                        if (path.parent.property === undefined) {
+                          continue // Technically we should probably do this recursively but that might create more issues than is solved currently
+                        }
+
+                        const parameterName = path.parent.property.name
+                        const parameter = serviceReqirement[outerNode.id.name].parameters[parameterName]
+
+                        if (parameter === undefined) {
+                          logErrorAtNode(errors, path.parent, `Parameter "${parameterName}" is not defined in serviceDescription`)
+                        } else if (parameter !== true) {
+                          serviceReqirement[outerNode.id.name].parameters[parameterName] = true
+                        }
+                      }
+                    }
                   } else {
                     const parameterName = parent.property.name
                     const parameter = serviceReqirement[outerNode.id.name].parameters[parameterName]
@@ -60,22 +78,19 @@ module.exports = function (opts) {
                   }
                 }
               }
-            })
+            }, outerPath.scope, outerPath.state, outerPath)
           }
         }
       })
 
       // TODO: This needs some work since we have a hard time actually knowing
-      /*
       for (const [key, method] of Object.entries(serviceReqirement)) {
         for (const [paramterName, value] of Object.entries(method.parameters)) {
           if (value !== true) {
-            console.log(value)
-            logError(errors, path.normalize(descriptionPath), `The parameter "${paramterName}" was defined in the service description for the function "${key}" but not in the code`)
+            logWarning(errors, path.normalize(descriptionPath), `The parameter "${paramterName}" was defined in the service description for the function "${key}" but not in the code`)
           }
         }
       }
-      */
     }
   }
 

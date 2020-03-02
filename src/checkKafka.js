@@ -1,5 +1,5 @@
-const acorn = require('acorn')
-const walk = require('acorn-walk')
+const parser = require('@babel/parser')
+const traverse = require('@babel/traverse').default
 const fs = require('fs')
 const _ = require('lodash')
 const path = require('path')
@@ -38,13 +38,14 @@ module.exports = function (opts) {
 
     for (let jsFile of jsFiles) {
       const jsFileData = fs.readFileSync(jsFile, 'utf-8')
-
-      walk.simple(acorn.parse(jsFileData, { locations: true, sourceFile: jsFile }), {
-        CallExpression (node) {
+      const ast = parser.parse(jsFileData, { sourceType: 'module', sourceFilename: jsFile, plugins: ['objectRestSpread'] })
+      traverse(ast, {
+        CallExpression (nodePath) {
+          const node = nodePath.node
           if (node.callee && node.callee.property) {
             if (node.callee.property.name === 'produce') {
               const firstArg = node.arguments[0]
-              if (firstArg && firstArg.type !== 'Literal') {
+              if (firstArg && firstArg.type !== 'StringLiteral') {
                 logErrorAtNode(errors, firstArg, 'Produce was called with non-literal.')
                 return
               }
@@ -66,7 +67,7 @@ module.exports = function (opts) {
               }
 
               for (const element of firstArg.elements) {
-                if (element && element.type !== 'Literal') {
+                if (element && element.type !== 'StringLiteral') {
                   logErrorAtNode(errors, element, 'Array passed to subscribe contains non-literal.')
                   continue
                 }
