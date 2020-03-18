@@ -10,7 +10,7 @@ module.exports = function (opts) {
   const errors = []
   const descriptionPaths = glob.sync(path.join(opts.srcPath, '/**/serviceDescription.json'))
 
-  for (let descriptionPath of descriptionPaths) {
+  for (const descriptionPath of descriptionPaths) {
     const serviceDirectory = path.parse(descriptionPath).dir
     const jsFiles = glob.sync(path.join(serviceDirectory, '**', '*.js'))
 
@@ -36,7 +36,7 @@ module.exports = function (opts) {
       }
     }
 
-    for (let jsFile of jsFiles) {
+    for (const jsFile of jsFiles) {
       const jsFileData = fs.readFileSync(jsFile, 'utf-8')
       const ast = parser.parse(jsFileData, { sourceType: 'module', sourceFilename: jsFile, plugins: ['objectRestSpread'] })
       traverse(ast, {
@@ -86,12 +86,12 @@ module.exports = function (opts) {
     }
 
     const notUsedConsumers = _.keys(_.pickBy(serviceReqirement.consumers, (o) => !o))
-    for (let consumer of notUsedConsumers) {
+    for (const consumer of notUsedConsumers) {
       logError(errors, path.normalize(descriptionPath), `Service description contains unused consumer '${consumer}'`)
     }
 
     const notUsedProducers = _.keys(_.pickBy(serviceReqirement.producers, (o) => !o))
-    for (let producer of notUsedProducers) {
+    for (const producer of notUsedProducers) {
       logError(errors, path.normalize(descriptionPath), `Service description contains unused producer '${producer}'`)
     }
   }

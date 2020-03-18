@@ -16,7 +16,7 @@ module.exports = function (opts) {
 
   const usedServiceEnvs = []
 
-  for (let descriptionPath of descriptionPaths) {
+  for (const descriptionPath of descriptionPaths) {
     const serviceDirectory = path.parse(descriptionPath).dir
     const jsFiles = glob.sync(path.join(serviceDirectory, '**', '*.js'))
 
@@ -32,20 +32,20 @@ module.exports = function (opts) {
       serviceReqirement = _.mapValues(description.envVars, () => false)
     }
 
-    for (let jsFile of jsFiles) {
+    for (const jsFile of jsFiles) {
       walkFile(jsFile, serviceReqirement, globalEnvs, errors)
     }
 
     usedServiceEnvs.push(..._.keys(_.pickBy(serviceReqirement, (o) => o)))
 
     const notUsedEnvVars = _.keys(_.pickBy(serviceReqirement, (o) => !o))
-    for (let envVar of notUsedEnvVars) {
+    for (const envVar of notUsedEnvVars) {
       logError(errors, path.normalize(descriptionPath), `Service description contains unused environment variable '${envVar}'`)
     }
   }
 
   const otherJSFiles = glob.sync(path.join(opts.srcPath, '/**/*.js'), { ignore: ignoreFiles })
-  for (let jsFile of otherJSFiles) {
+  for (const jsFile of otherJSFiles) {
     const jsFileData = fs.readFileSync(jsFile, 'utf-8')
     const ast = parser.parse(jsFileData, { sourceType: 'module', sourceFilename: jsFile, plugins: ['objectRestSpread'] })
 
@@ -71,7 +71,7 @@ module.exports = function (opts) {
   }
 
   const notUsedGlobalEnvVars = _.keys(_.pickBy(globalEnvs, (o) => !o))
-  for (let envVar of notUsedGlobalEnvVars) {
+  for (const envVar of notUsedGlobalEnvVars) {
     logError(errors, path.normalize(path.join(opts.srcPath, '/serviceDescription.json')), `Service description contains unused environment variable '${envVar}'`)
   }
 

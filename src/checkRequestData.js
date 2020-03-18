@@ -10,7 +10,7 @@ module.exports = function (opts) {
   const errors = []
   const descriptionPaths = glob.sync(path.join(opts.srcPath, '/**/serviceDescription.json'))
 
-  for (let descriptionPath of descriptionPaths) {
+  for (const descriptionPath of descriptionPaths) {
     const serviceDirectory = path.parse(descriptionPath).dir
     const jsFiles = glob.sync(path.join(serviceDirectory, '**', '*.js'))
 
@@ -33,7 +33,7 @@ module.exports = function (opts) {
       continue
     }
 
-    for (let jsFile of jsFiles) {
+    for (const jsFile of jsFiles) {
       const jsFileData = fs.readFileSync(jsFile, 'utf-8')
       const ast = parser.parse(jsFileData, { sourceType: 'module', sourceFilename: jsFile, plugins: ['objectRestSpread'] })
 
