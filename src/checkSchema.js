@@ -1,5 +1,5 @@
 const Ajv = require('ajv')
-const ajv = Ajv({ allErrors: true })
+const ajv = new Ajv({ allErrors: true })
 const path = require('path')
 const fs = require('fs')
 const glob = require('glob')
@@ -16,10 +16,10 @@ ajv.addSchema(require('./schema/service-description.schema.json'), 'service-desc
 
 module.exports = function (opts) {
   const errors = []
-  const descriptionPaths = glob.sync(path.join(opts.srcPath, '/**/serviceDescription.json'))
+  const descriptionPaths = glob.sync(path.join(opts.srcPath, '/**/serviceDescription.json'), { windowsPathsNoEscape: true })
 
   for (const descriptionPath of descriptionPaths) {
-    var valid = ajv.validate('service-description', JSON.parse(fs.readFileSync(descriptionPath, 'utf-8')))
+    const valid = ajv.validate('service-description', JSON.parse(fs.readFileSync(descriptionPath, 'utf-8')))
 
     if (!valid) {
       for (const error of ajv.errors) {

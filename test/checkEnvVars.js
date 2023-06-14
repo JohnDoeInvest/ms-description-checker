@@ -23,8 +23,8 @@ describe('Check Environment Variables', () => {
     // and one for the variable being used but not defined. These happens in different services.
     assert.lengthOf(errors, 2)
     // Just to check that we have the correct places, this is a bit weak since we can't be 100% sure that this is the order.
-    assert.match(errors[0].message, /unused.*ENV/)
-    assert.match(errors[1].message, /ENV.*not defined/)
+    assert.match(errors[0].message, /ENV.*not defined/)
+    assert.match(errors[1].message, /unused.*ENV/)
   })
 
   it('Service ENV used in same service', () => {

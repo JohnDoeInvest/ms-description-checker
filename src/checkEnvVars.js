@@ -11,14 +11,14 @@ module.exports = function (opts) {
 
   const rootDescription = JSON.parse(fs.readFileSync(path.resolve(opts.srcPath, 'serviceDescription.json')))
   const globalEnvs = _.mapValues(rootDescription.envVars, () => false)
-  const descriptionPaths = glob.sync(path.join(opts.srcPath, '/**/serviceDescription.json'))
+  const descriptionPaths = glob.sync(path.join(opts.srcPath, '/**/serviceDescription.json'), { windowsPathsNoEscape: true })
   const ignoreFiles = []
 
   const usedServiceEnvs = []
 
   for (const descriptionPath of descriptionPaths) {
     const serviceDirectory = path.parse(descriptionPath).dir
-    const jsFiles = glob.sync(path.join(serviceDirectory, '**', '*.js'))
+    const jsFiles = glob.sync(path.join(serviceDirectory, '**', '*.js'), { windowsPathsNoEscape: true })
 
     const description = JSON.parse(fs.readFileSync(descriptionPath, 'utf-8'))
     if (description.name === 'GLOBAL') {
@@ -44,7 +44,7 @@ module.exports = function (opts) {
     }
   }
 
-  const otherJSFiles = glob.sync(path.join(opts.srcPath, '/**/*.js'), { ignore: ignoreFiles })
+  const otherJSFiles = glob.sync(path.join(opts.srcPath, '/**/*.js'), { ignore: ignoreFiles, windowsPathsNoEscape: true })
   for (const jsFile of otherJSFiles) {
     const jsFileData = fs.readFileSync(jsFile, 'utf-8')
     const ast = parser.parse(jsFileData, { sourceType: 'module', sourceFilename: jsFile, plugins: ['objectRestSpread'] })

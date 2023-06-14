@@ -8,11 +8,11 @@ const { logError, logErrorAtNode } = require('./logger')
 
 module.exports = function (opts) {
   const errors = []
-  const descriptionPaths = glob.sync(path.join(opts.srcPath, '/**/serviceDescription.json'))
+  const descriptionPaths = glob.sync(path.join(opts.srcPath, '/**/serviceDescription.json'), { windowsPathsNoEscape: true })
 
   for (const descriptionPath of descriptionPaths) {
     const serviceDirectory = path.parse(descriptionPath).dir
-    const jsFiles = glob.sync(path.join(serviceDirectory, '**', '*.js'))
+    const jsFiles = glob.sync(path.join(serviceDirectory, '**', '*.js'), { windowsPathsNoEscape: true })
 
     const description = JSON.parse(fs.readFileSync(descriptionPath, 'utf-8'))
     if (description.name === 'GLOBAL') {
