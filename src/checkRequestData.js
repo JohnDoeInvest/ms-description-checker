@@ -82,13 +82,13 @@ module.exports = function (opts) {
           }
         }
       })
+    }
 
-      // TODO: This needs some work since we have a hard time actually knowing
-      for (const [key, method] of Object.entries(serviceReqirement)) {
-        for (const [paramterName, value] of Object.entries(method.parameters)) {
-          if (value !== true) {
-            logWarning(errors, path.normalize(descriptionPath), `The parameter "${paramterName}" was defined in the service description for the function "${key}" but not in the code`)
-          }
+    // TODO: This needs some work since we have a hard time actually knowing
+    for (const [key, method] of Object.entries(serviceReqirement)) {
+      for (const [paramterName, value] of Object.entries(method.parameters)) {
+        if (value !== true) {
+          logWarning(errors, path.normalize(descriptionPath), `The parameter "${paramterName}" was defined in the service description for the function "${key}" but not in the code`)
         }
       }
     }
